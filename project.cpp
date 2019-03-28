@@ -1,15 +1,17 @@
+//github current commit
 #include<iostream>
 using namespace std;
 #include<queue>
 
 //global variables
 int n;
-int a[100][7];
+int a[100][8];
 int tq=4;
 int timeRoundRobin;
 int timePriority;
 int timeFcfs;
 int time=0;
+int maxAT;
 
 //queues
 queue<int*> q1;
@@ -26,11 +28,22 @@ void display(queue<int*> q);
 void getdata();
 void ordering(queue<int*> q);
 void orderingfcfs(queue<int*> q);
+void displayProcess(int* r);
+int find(int w);
+int checkduplicates(queue<int*> q, int p);
 
 main()
 {
 	getdata();
+	cout<<"\nGantt Chart:\n";
     roundrobin();
+    cout<<"\n\nThe final CPU analysis:\n";
+    cout<<"\nPNO\tPrority\tArrival Time\tBurst Time\tCompletion Time\tTurnaround Time\tWaiting Time\n";
+    for(int i=0;i<n;i++)
+    {
+    	cout<<"P"<<a[i][0]<<"\t"<<a[i][1]<<"\t"<<a[i][2]<<"\t\t"<<a[i][3]<<"\t\t"<<a[i][5]<<"\t\t"<<a[i][6]<<"\t\t"<<a[i][7];
+    	cout<<"\n";
+	}
 }
 
 void display(queue<int*> q)
@@ -85,7 +98,16 @@ void getdata()
 			min=a[i][2];
 		}
 	}
-	time=time+min;	
+	time=time+min;
+	int max=a[0][2];
+	for(int i=0;i<n;i++)
+	{
+		if(a[i][2]>max)
+		{
+			max=a[i][2];
+		}
+	}
+	maxAT=max;	
 }
 
 int checkduplicates(queue<int*> q, int p)
@@ -151,13 +173,32 @@ void assignQueues(int end)
     }
 }
 
-void displayProcess(int* a)
+int find(int w)
 {
-	cout<<"P"<<a[0]<<"-->";
+	int k;
+	for(int i=0;i<n;i++)
+	{
+		if(a[i][0]==w)
+		{
+			k=w;
+			break;
+		}
+	}
+	return k;
+}
+void displayProcess(int* r)
+{
+	int k=find(r[0]);
+	a[k-1][5]=time;
+	a[k-1][6]=a[k-1][5]-a[k-1][2];
+	a[k-1][7]=a[k-1][6]-a[k-1][3];
+	cout<<"P"<<r[0]<<"-->";
 }
 int roundrobin()
 {
 	assignQueues(time);
+	if(!q1.empty()||!q2.empty()||!q3.empty())
+	{
 	if(!q1.empty())
 	{
 	timeRoundRobin=0;
@@ -215,6 +256,12 @@ int roundrobin()
 	}
     }
     priority();
+    }
+    if(time<maxAT)
+    {
+    	time=maxAT;
+    	roundrobin();
+	}
 	return 0;
 }
 
@@ -339,6 +386,7 @@ void orderingfcfs(queue<int*> q)
     }
 	q3=g;
 }
+
 
 int fcfs()
 {
