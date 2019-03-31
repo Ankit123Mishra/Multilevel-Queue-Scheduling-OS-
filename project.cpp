@@ -35,6 +35,7 @@ main()
 {
 	getdata();
 	cout<<"\nGantt Chart:\n";
+	cout<<"("<<time<<")";
     roundrobin();
     cout<<"\n\nThe final CPU analysis:\n";
     cout<<"\nPNO\tPrority\tArrival Time\tBurst Time\tCompletion Time\tTurnaround Time\tWaiting Time\n";
