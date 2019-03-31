@@ -243,14 +243,38 @@ int roundrobin()
 	    else
 		{
 	    	int diff=10-timeRoundRobin;
-	    	time=time+diff;
-	    	assignQueues(time);
-	    	timeRoundRobin=10;
-	    	displayProcess(q1.front());
-	    	cout<<"("<<time<<")";
-	    	q1.front()[4]=q1.front()[4]-diff;
-	    	priority();
-	    	return 1;
+	    	if(diff<=tq && diff>0)
+	    	{
+	    		time=time+diff;
+	    	    assignQueues(time);
+	    	    timeRoundRobin=timeRoundRobin+diff;
+	    	    displayProcess(q1.front());
+	    	    cout<<"("<<time<<")";
+	    	    q1.front()[4]=q1.front()[4]-diff;
+	    	    if(timeRoundRobin==10)
+		     	{
+				priority();
+				return 1;
+		    	}
+			}
+	    	else if(diff>tq)
+	    	{
+	    		time=time+tq;
+	    		timeRoundRobin=timeRoundRobin+tq;
+			    assignQueues(time);
+			    q1.front()[4]=q1.front()[4]-tq;
+			    displayProcess(q1.front());
+			    cout<<"("<<time<<")";
+			    temp.push(q1.front());
+			    q1.pop();
+			    q1.push(temp.front());
+			    temp.pop();
+			    if(timeRoundRobin==10)
+			    {
+			 	 priority();
+				 return 1;
+			    }
+			}
 		}
 	}
     }
