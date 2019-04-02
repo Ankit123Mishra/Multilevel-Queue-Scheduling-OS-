@@ -11,6 +11,7 @@ int timePriority;
 int timeFcfs;
 int time=0;
 int maxAT;
+int nextAT;
 
 //queues
 queue<int*> q1;
@@ -194,6 +195,15 @@ void displayProcess(int* r)
 	a[k-1][7]=a[k-1][6]-a[k-1][3];
 	cout<<"P"<<r[0]<<"-->";
 }
+
+void findNext()
+{
+    if(!qn.empty())
+    {
+      time=qn.front()[2];
+      roundrobin();
+	}
+}
 int roundrobin()
 {
 	assignQueues(time);
@@ -281,11 +291,7 @@ int roundrobin()
     }
     priority();
     }
-    if(time<maxAT)
-    {
-    	time=maxAT;
-    	roundrobin();
-	}
+    findNext();
 	return 0;
 }
 
