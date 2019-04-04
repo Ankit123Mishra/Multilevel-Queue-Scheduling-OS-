@@ -23,7 +23,7 @@ queue<int*> qn;
 int roundrobin();
 int priority();
 int fcfs();
-void assignQueues(int end);
+int assignQueues(int end);
 void display(queue<int*> q);
 void getdata();
 void ordering(queue<int*> q);
@@ -45,6 +45,22 @@ main()
     	cout<<"P"<<a[i][0]<<"\t"<<a[i][1]<<"\t"<<a[i][2]<<"\t\t"<<a[i][3]<<"\t\t"<<a[i][5]<<"\t\t"<<a[i][6]<<"\t\t"<<a[i][7];
     	cout<<"\n";
 	}
+	float sumTAT=0.0;
+	for(int i=0;i<n;i++)
+	{
+		sumTAT=sumTAT+a[i][6];
+	}
+	float avgTAT;
+	avgTAT=sumTAT/n;
+	cout<<"\nThe Average turnaround time is: "<<avgTAT<<"\n";
+	float sumWT=0.0;
+	for(int i=0;i<n;i++)
+	{
+		sumWT=sumWT+a[i][7];
+	}
+	float avgWT;
+	avgWT=sumWT/n;
+	cout<<"The Average waiting time is: "<<avgWT<<"\n";
 }
 
 void display(queue<int*> q)
@@ -75,12 +91,30 @@ void getdata()
 	{
 		cout<<"Process "<<i+1<<":";
 		a[i][0]=i+1;
-		cout<<"\n Priority(0-9) : ";
+		l:
+		cout<<"\n Priority(1-9) : ";
 		cin>>a[i][1];
+		if(a[i][1]<=0 || a[i][1]>9)
+		{
+			cout<<"Please Enter a valid priority number!!!";
+			goto l;
+		}
+		g:
 		cout<<"\n Arrival Time : ";
 		cin>>a[i][2];
+		if(a[i][2]<0)
+		{
+			cout<<"Please Enter a valid arrival time!!!";
+			goto g;
+		}
+		m:
 		cout<<"\n Burst Time : ";
 		cin>>a[i][3];
+		if(a[i][3]<0)
+		{
+			cout<<"Please Enter a valid burst time!!!";
+			goto m;
+		}
 		//remaining time
 		a[i][4]=a[i][3];
 		//completion time
@@ -99,16 +133,7 @@ void getdata()
 			min=a[i][2];
 		}
 	}
-	time=time+min;
-	int max=a[0][2];
-	for(int i=0;i<n;i++)
-	{
-		if(a[i][2]>max)
-		{
-			max=a[i][2];
-		}
-	}
-	maxAT=max;	
+	time=time+min;	
 }
 
 int checkduplicates(queue<int*> q, int p)
@@ -125,8 +150,9 @@ int checkduplicates(queue<int*> q, int p)
 	}
 	return 0;
 }
-void assignQueues(int end)
+int assignQueues(int end)
 {
+	int v=0;
 	if(!qn.empty())
 	{
 	queue<int*> q=qn;
@@ -141,6 +167,7 @@ void assignQueues(int end)
 				int c=checkduplicates(q1,q.front()[0]);
 				if(c==0)
 				{
+					v++;
 					q1.push(q.front());
 				}
 			}
@@ -172,6 +199,7 @@ void assignQueues(int end)
 	}
 	qn=g;
     }
+    return v;
 }
 
 int find(int w)
@@ -204,13 +232,56 @@ void findNext()
       roundrobin();
 	}
 }
+
+void orderingrr(queue<int*> q)
+{
+	int c[100][7];
+	int b[100][7];
+	queue<int*> g=q;
+	int i=0;
+	while(!g.empty())
+	{
+		for(int j=0;j<7;j++)
+		{
+			b[i][j]=g.front()[j];
+		}
+		i++;
+		g.pop();
+	}
+	for(int i=0;i<q.size();i++)
+	{
+		for(int j=0;j<7;j++)
+		{
+		c[i][j]=b[i][j];
+	    }
+	}
+	for(int k=0;k<i;k++)
+	{
+	    int min=c[0][2];
+	    int p=0;
+	for(int j=0;j<i;j++)
+	{
+		if(c[j][2]<min)
+		{
+			min=c[j][2];
+			p=j;
+		}
+	}
+	c[p][2]=10000;
+	g.push(b[p]);
+    }
+	q1=g;
+}
+
 int roundrobin()
 {
+	int v;
 	assignQueues(time);
 	if(!q1.empty()||!q2.empty()||!q3.empty())
 	{
 	if(!q1.empty())
 	{
+	orderingrr(q1);
 	timeRoundRobin=0;
 	queue<int*> temp;
     while(!q1.empty())
@@ -221,11 +292,15 @@ int roundrobin()
     	{
     		time=time+q1.front()[4];
     		timeRoundRobin=timeRoundRobin+q1.front()[4];
-    		assignQueues(time);
     		q1.front()[4]=0;
     		displayProcess(q1.front());
     		cout<<"("<<time<<")";
     		q1.pop();
+    		v=assignQueues(time);
+    		if(v>0)
+    		{
+    			orderingrr(q1);
+			}
     		if(timeRoundRobin==10)
     		{
     			priority();
@@ -236,12 +311,12 @@ int roundrobin()
 		{
 			time=time+tq;
 			timeRoundRobin=timeRoundRobin+tq;
-			assignQueues(time);
 			q1.front()[4]=q1.front()[4]-tq;
 			displayProcess(q1.front());
 			cout<<"("<<time<<")";
 			temp.push(q1.front());
 			q1.pop();
+			assignQueues(time);
 			q1.push(temp.front());
 			temp.pop();
 			if(timeRoundRobin==10)
@@ -257,11 +332,15 @@ int roundrobin()
 	    	if(diff<=tq && diff>0)
 	    	{
 	    		time=time+diff;
-	    	    assignQueues(time);
 	    	    timeRoundRobin=timeRoundRobin+diff;
 	    	    displayProcess(q1.front());
 	    	    cout<<"("<<time<<")";
 	    	    q1.front()[4]=q1.front()[4]-diff;
+	    	    v=assignQueues(time);
+	    	    if(v>0)
+	    	    {
+	    	    	orderingrr(q1);
+				}
 	    	    if(timeRoundRobin==10)
 		     	{
 				priority();
@@ -272,12 +351,16 @@ int roundrobin()
 	    	{
 	    		time=time+tq;
 	    		timeRoundRobin=timeRoundRobin+tq;
-			    assignQueues(time);
 			    q1.front()[4]=q1.front()[4]-tq;
 			    displayProcess(q1.front());
 			    cout<<"("<<time<<")";
 			    temp.push(q1.front());
 			    q1.pop();
+			    v=assignQueues(time);
+			    if(v>0)
+			    {
+			    	orderingrr(q1);
+				}
 			    q1.push(temp.front());
 			    temp.pop();
 			    if(timeRoundRobin==10)
@@ -334,6 +417,7 @@ void ordering(queue<int*> q)
     }
 	q2=g;
 }
+
 int priority()
 {
 	assignQueues(time);
