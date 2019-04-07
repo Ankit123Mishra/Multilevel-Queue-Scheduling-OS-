@@ -12,7 +12,6 @@ int timeFcfs;
 int time=0;
 int maxAT;
 int nextAT;
-int x=0;
 
 //queues
 queue<int*> q1;
@@ -27,7 +26,6 @@ int fcfs();
 void assignQueues(int end);
 void display(queue<int*> q);
 void getdata();
-void initialordering(queue<int*> q);
 void ordering(queue<int*> q);
 void orderingfcfs(queue<int*> q);
 void displayProcess(int* r);
@@ -234,49 +232,6 @@ void findNext()
 	}
 }
 
-void initialordering(queue<int*> q)
-{
-	if(x==0)
-	{
-	int c[100][7];
-	int b[100][7];
-	queue<int*> g=q;
-	int i=0;
-	while(!g.empty())
-	{
-		for(int j=0;j<7;j++)
-		{
-			b[i][j]=g.front()[j];
-		}
-		i++;
-		g.pop();
-	}
-	for(int i=0;i<q.size();i++)
-	{
-		for(int j=0;j<7;j++)
-		{
-		c[i][j]=b[i][j];
-	    }
-	}
-	for(int k=0;k<i;k++)
-	{
-	    int min=c[0][2];
-	    int p=0;
-	for(int j=0;j<i;j++)
-	{
-		if(c[j][2]<min)
-		{
-			min=c[j][2];
-			p=j;
-		}
-	}
-	c[p][2]=10000;
-	g.push(b[p]);
-    }
-	q1=g;
-    }
-}
-
 int roundrobin()
 {
 	assignQueues(time);
@@ -284,8 +239,6 @@ int roundrobin()
 	{
 	if(!q1.empty())
 	{
-	initialordering(q1);
-	x++;
 	timeRoundRobin=0;
 	queue<int*> temp;
     while(!q1.empty())
