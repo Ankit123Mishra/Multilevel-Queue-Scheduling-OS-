@@ -12,6 +12,7 @@ int timeFcfs;
 int time=0;
 int maxAT;
 int nextAT;
+int x=0;
 
 //queues
 queue<int*> q1;
@@ -23,9 +24,10 @@ queue<int*> qn;
 int roundrobin();
 int priority();
 int fcfs();
-int assignQueues(int end);
+void assignQueues(int end);
 void display(queue<int*> q);
 void getdata();
+void initialordering(queue<int*> q);
 void ordering(queue<int*> q);
 void orderingfcfs(queue<int*> q);
 void displayProcess(int* r);
@@ -150,7 +152,7 @@ int checkduplicates(queue<int*> q, int p)
 	}
 	return 0;
 }
-int assignQueues(int end)
+void assignQueues(int end)
 {
 	int v=0;
 	if(!qn.empty())
@@ -199,7 +201,6 @@ int assignQueues(int end)
 	}
 	qn=g;
     }
-    return v;
 }
 
 int find(int w)
@@ -233,8 +234,10 @@ void findNext()
 	}
 }
 
-void orderingrr(queue<int*> q)
+void initialordering(queue<int*> q)
 {
+	if(x==0)
+	{
 	int c[100][7];
 	int b[100][7];
 	queue<int*> g=q;
@@ -271,17 +274,18 @@ void orderingrr(queue<int*> q)
 	g.push(b[p]);
     }
 	q1=g;
+    }
 }
 
 int roundrobin()
 {
-	int v;
 	assignQueues(time);
 	if(!q1.empty()||!q2.empty()||!q3.empty())
 	{
 	if(!q1.empty())
 	{
-	orderingrr(q1);
+	initialordering(q1);
+	x++;
 	timeRoundRobin=0;
 	queue<int*> temp;
     while(!q1.empty())
@@ -296,11 +300,7 @@ int roundrobin()
     		displayProcess(q1.front());
     		cout<<"("<<time<<")";
     		q1.pop();
-    		v=assignQueues(time);
-    		if(v>0)
-    		{
-    			orderingrr(q1);
-			}
+    		assignQueues(time);
     		if(timeRoundRobin==10)
     		{
     			priority();
@@ -336,11 +336,7 @@ int roundrobin()
 	    	    displayProcess(q1.front());
 	    	    cout<<"("<<time<<")";
 	    	    q1.front()[4]=q1.front()[4]-diff;
-	    	    v=assignQueues(time);
-	    	    if(v>0)
-	    	    {
-	    	    	orderingrr(q1);
-				}
+	    	    assignQueues(time);
 	    	    if(timeRoundRobin==10)
 		     	{
 				priority();
@@ -356,11 +352,7 @@ int roundrobin()
 			    cout<<"("<<time<<")";
 			    temp.push(q1.front());
 			    q1.pop();
-			    v=assignQueues(time);
-			    if(v>0)
-			    {
-			    	orderingrr(q1);
-				}
+			    assignQueues(time);
 			    q1.push(temp.front());
 			    temp.pop();
 			    if(timeRoundRobin==10)
