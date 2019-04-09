@@ -5,6 +5,7 @@ using namespace std;
 //global variables
 int n;
 int a[100][8];
+int z[100][8];
 int tq=4;
 int timeRoundRobin;
 int timePriority;
@@ -42,13 +43,13 @@ main()
     cout<<"\nPNO\tPrority\tArrival Time\tBurst Time\tCompletion Time\tTurnaround Time\tWaiting Time\n";
     for(int i=0;i<n;i++)
     {
-    	cout<<"P"<<a[i][0]<<"\t"<<a[i][1]<<"\t"<<a[i][2]<<"\t\t"<<a[i][3]<<"\t\t"<<a[i][5]<<"\t\t"<<a[i][6]<<"\t\t"<<a[i][7];
+    	cout<<"P"<<z[i][0]<<"\t"<<z[i][1]<<"\t"<<z[i][2]<<"\t\t"<<z[i][3]<<"\t\t"<<z[i][5]<<"\t\t"<<z[i][6]<<"\t\t"<<z[i][7];
     	cout<<"\n";
 	}
 	float sumTAT=0.0;
 	for(int i=0;i<n;i++)
 	{
-		sumTAT=sumTAT+a[i][6];
+		sumTAT=sumTAT+z[i][6];
 	}
 	float avgTAT;
 	avgTAT=sumTAT/n;
@@ -56,7 +57,7 @@ main()
 	float sumWT=0.0;
 	for(int i=0;i<n;i++)
 	{
-		sumWT=sumWT+a[i][7];
+		sumWT=sumWT+z[i][7];
 	}
 	float avgWT;
 	avgWT=sumWT/n;
@@ -123,6 +124,32 @@ void getdata()
 		a[i][6]=0;
 		//waiting time
 		a[i][7]=0;
+		//qn.push(a[i]);
+	}
+	for(int i=0;i<n;i++)
+	{
+		for(int j=0;j<8;j++)
+		{
+			z[i][j]=a[i][j];
+		}
+	}
+	int r;
+	for(int k=0;k<n-1;k++)
+	{
+		for(int i=0;i<n-1;i++)
+		{
+			if(a[i][2]>a[i+1][2]){
+				for(int j=0;j<8;j++)
+				{
+					r=a[i][j];
+					a[i][j]=a[i+1][j];
+					a[i+1][j]=r;
+				}
+			}
+		}
+	}
+	for(int i=0;i<n;i++)
+	{
 		qn.push(a[i]);
 	}
 	int min=a[0][2];
@@ -152,7 +179,6 @@ int checkduplicates(queue<int*> q, int p)
 }
 void assignQueues(int end)
 {
-	int v=0;
 	if(!qn.empty())
 	{
 	queue<int*> q=qn;
@@ -167,7 +193,6 @@ void assignQueues(int end)
 				int c=checkduplicates(q1,q.front()[0]);
 				if(c==0)
 				{
-					v++;
 					q1.push(q.front());
 				}
 			}
@@ -187,17 +212,10 @@ void assignQueues(int end)
 					q3.push(q.front());
 				}
 			}
-		   	f=1;
 		   	qn.pop();
-		}
-		if(f==0)
-		{
-		   g.push(q.front());
-		   qn.pop();	
 		}
 		q.pop();
 	}
-	qn=g;
     }
 }
 
@@ -217,9 +235,9 @@ int find(int w)
 void displayProcess(int* r)
 {
 	int k=find(r[0]);
-	a[k-1][5]=time;
-	a[k-1][6]=a[k-1][5]-a[k-1][2];
-	a[k-1][7]=a[k-1][6]-a[k-1][3];
+	z[k-1][5]=time;
+	z[k-1][6]=z[k-1][5]-z[k-1][2];
+	z[k-1][7]=z[k-1][6]-z[k-1][3];
 	cout<<"P"<<r[0]<<"-->";
 }
 
@@ -368,7 +386,7 @@ int priority()
 	assignQueues(time);
 	if(!q2.empty())
 	{
-	ordering(q2);
+	 ordering(q2);
 	timePriority=0;
     while(!q2.empty())
     {
@@ -452,7 +470,6 @@ int fcfs()
 	assignQueues(time);
 	if(!q3.empty())
 	{
-		orderingfcfs(q3);
 		timeFcfs=0;
 		while(!q3.empty())
 		{
